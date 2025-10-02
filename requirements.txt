@@ -1,0 +1,8 @@
+python -m venv legalmate_env
+
+# Activate on Windows
+.\legalmate_env\Scripts\activate
+# Activate on macOS/Linux
+source legalmate_env/bin/activate
+
+pip install transformers sentence-transformers faiss-cpu pypdf pandas numpy

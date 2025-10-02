@@ -1,0 +1,18 @@
+# Python Virtual Environment
+legalmate_env/
+
+# Standard Python files to ignore
+__pycache__/
+*.pyc
+
+# Operating System files
+.DS_Store
+Thumbs.db
+
+# Large Model/Data Artifacts (Crucial for LegalMate AI)
+# These files should NEVER be committed to Git.
+*.bin             # FAISS index files
+*.pkl             # Metadata pickle files
+*.pt              # PyTorch model files
+*.h5              # Keras/TensorFlow model files
+embeddings/       # Ignore the entire embeddings folder
