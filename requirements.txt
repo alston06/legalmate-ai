@@ -6,3 +6,10 @@ python -m venv legalmate_env
 source legalmate_env/bin/activate
 
 pip install transformers sentence-transformers faiss-cpu pypdf pandas numpy
+pip install google-genai
+
+# On macOS/Linux
+export GEMINI_API_KEY="YOUR_API_KEY_HERE"
+
+# On Windows (Command Prompt)
+set GEMINI_API_KEY="YOUR_API_KEY_HERE"
