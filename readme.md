@@ -1,4 +1,3 @@
-```markdown
 # LegalMate AI: Core RAG Prototype (MiniLM + FAISS + Gemini)
 
 This repository contains the foundational Machine Learning components for the **LegalMate AI** project.  
