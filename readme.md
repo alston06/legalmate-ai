@@ -1,78 +1,130 @@
-LegalMate AI: Core RAG Prototype (MiniLM + FAISS + Gemini)
-This repository contains the foundational Machine Learning components for the LegalMate AI project. The architecture uses Retrieval-Augmented Generation (RAG) to provide factually grounded legal advice by combining a fast vector retrieval model (MiniLM + FAISS) with a powerful LLM (Gemini) for text generation and simplification.
+```markdown
+# LegalMate AI: Core RAG Prototype (MiniLM + FAISS + Gemini)
 
-1. Architecture Overview
+This repository contains the foundational Machine Learning components for the **LegalMate AI** project.  
+The architecture uses **Retrieval-Augmented Generation (RAG)** to provide factually grounded legal advice by combining:
+
+- **MiniLM + FAISS** → for fast vector retrieval  
+- **Gemini LLM** → for text generation and simplification  
+
+---
+
+## 1. Architecture Overview
+
 The system operates in two phases:
 
-Indexing (Offline): Large legal documents (Supreme Court Judgments, Bare Acts) are converted into numerical vectors (embeddings) and stored in a searchable index (FAISS).
+**Indexing (Offline):**  
+- Large legal documents (Supreme Court Judgments, Bare Acts) are converted into embeddings (numerical vectors).  
+- Stored in a searchable index using **FAISS**.  
 
-Runtime (Online): A user query is converted into a vector, and FAISS retrieves the most relevant legal text. This retrieved text is then sent to the Gemini LLM, which is instructed to generate a simplified, accurate answer based only on the provided context.
+**Runtime (Online):**  
+- A user query is converted into a vector.  
+- FAISS retrieves the most relevant legal text.  
+- The retrieved text is passed to **Gemini LLM**, which generates a simplified and accurate answer **only** based on the provided context.  
 
-2. Project Structure
+---
+
+## 2. Project Structure
+
+```
+
 LAWLLM
 └── legalmate-ai
-    ├── ai-models/
-    │   ├── data/                   # RAW INPUT: Stores downloaded ZIPs/PDFs (IGNORED by Git)
-    │   │   └── supreme_court/      # SC Judgment ZIPs are here
-    │   └── rag/                    # SCRIPTS: Core ML processing logic
-    │       ├── index_sc_cases_incremental.py  # Builds the index from SC data
-    │       └── run_query.py                   # Runs the end-to-end RAG query
-    ├── embeddings/                 # OUTPUT: Stores the final searchable indexes (.bin, .pkl) (IGNORED by Git)
-    ├── legalmate_env/              # Python Virtual Environment (IGNORED by Git)
-    └── .gitignore
+├── ai-models/
+│   ├── data/                   # RAW INPUT: Downloaded ZIPs/PDFs (IGNORED by Git)
+│   │   └── supreme_court/      # SC Judgment ZIPs
+│   └── rag/                    # SCRIPTS: Core ML logic
+│       ├── index_sc_cases_incremental.py  # Builds FAISS index from SC data
+│       └── run_query.py                   # End-to-end RAG query execution
+├── embeddings/                 # OUTPUT: Searchable indexes (.bin, .pkl) (IGNORED by Git)
+├── legalmate_env/              # Python Virtual Environment (IGNORED by Git)
+└── .gitignore
 
-3. Setup and Dependencies
-A. Environment Setup
-# 1. Download the codebase (Clone this repository)
+````
+
+---
+
+## 3. Setup and Dependencies
+
+### A. Environment Setup
+
+```bash
+# 1. Clone this repository
 
 # 2. Create Python Virtual Environment (venv)
 python -m venv legalmate_env
 
-# 3. Activate the Venv:
-# Activate on Windows
+# 3. Activate venv
+# On Windows
 .\legalmate_env\Scripts\activate
-# Activate on macOS/Linux
+# On macOS/Linux
 source legalmate_env/bin/activate
+````
 
-B. Install Dependencies
-You must install all necessary ML, PDF, and API libraries:
+### B. Install Dependencies
 
+```bash
 pip install transformers sentence-transformers faiss-cpu pypdf numpy
 pip install google-genai
+```
 
-C. Configure Gemini API Key
-The final RAG query relies on the Gemini API. You must set your API key as an environment variable:
+### C. Configure Gemini API Key
 
+```bash
 # On macOS/Linux
 export GEMINI_API_KEY="YOUR_API_KEY_HERE"
 
 # On Windows (Command Prompt)
 set GEMINI_API_KEY="YOUR_API_KEY_HERE"
+```
 
-4. Data Acquisition (Indexing Phase)
-The large legal datasets must be downloaded first. We use the AWS CLI for efficiency.
+---
 
-Step 1: Install AWS CLI (Prerequisite)
-Before downloading, ensure the AWS Command Line Interface is installed globally on your system so the aws command is recognized in your terminal.
+## 4. Data Acquisition (Indexing Phase)
 
-Step 2: Download Supreme Court Judgments (ZIPs)
-Navigate to the supreme_court folder and run this command as one line:
+### Step 1: Install AWS CLI (Prerequisite)
 
+Ensure AWS CLI is installed so the `aws` command is recognized.
+
+### Step 2: Download Supreme Court Judgments (ZIPs)
+
+```bash
 cd ai-models/data/supreme_court
-aws s3 cp s3://indian-supreme-court-judgments/data/zip/ . --recursive --exclude "*" --include "*.zip" --no-sign-request
+aws s3 cp s3://indian-supreme-court-judgments/data/zip/ . \
+    --recursive --exclude "*" --include "*.zip" --no-sign-request
+```
 
-Step 3: Run the Indexing Script (Incremental Save)
-The index_sc_cases_incremental.py script will read the downloaded ZIPs, extract the English PDFs in memory, generate embeddings using the MiniLM model, and incrementally save the final index.
+### Step 3: Run the Indexing Script
 
-# Run this from the project root (legalmate-ai)
+```bash
+# From project root
 python ai-models/rag/index_sc_cases_incremental.py
+```
 
-(Note: If you need to index the Constitution PDF, run create_vector_store.py first, then modify index_sc_cases_incremental.py to load and merge that index data at startup.)
+> **Note:**
+>
+> * If you need to index the Constitution PDF:
+>
+>   1. Run `create_vector_store.py`
+>   2. Modify `index_sc_cases_incremental.py` to load and merge that index at startup
 
-5. Running the End-to-End RAG Query
-Once the indexing is complete, the final .bin and .pkl files in the embeddings/ folder can be queried. The run_query.py script demonstrates the full workflow:
+---
 
-# Run this from the project root (legalmate-ai)
+## 5. Running the End-to-End RAG Query
+
+Once indexing is complete, the final `.bin` and `.pkl` files in the `embeddings/` folder can be queried.
+
+```bash
+# From project root
 python ai-models/rag/run_query.py
+```
 
-This script will output the query, the retrieved case law, and the final, simplified advice generated by the Gemini LLM.
+This script will:
+
+* Take a query
+* Retrieve the most relevant case law
+* Generate simplified legal advice using **Gemini LLM**
+
+---
+
+✅ With this setup, **LegalMate AI** provides factually grounded, simplified, and context-driven legal answers.
