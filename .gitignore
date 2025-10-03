@@ -16,3 +16,5 @@ Thumbs.db
 *.pt              # PyTorch model files
 *.h5              # Keras/TensorFlow model files
 embeddings/       # Ignore the entire embeddings folder
+
+ai-models/data/supreme_court/
